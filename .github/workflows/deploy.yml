@@ -1,0 +1,25 @@
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SECRET_KEY }}" > ~/.ssh/private.key
+          chmod 600 ~/.ssh/private.key
+
+      - name: Deploy Docker image to EC2
+        run: |
+          ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_INSTANCE }} << 'EOF'
+          git -C ~/api/ fetch --tags
+          git -C ~/api/ checkout tags/${{ github.ref_name }}
+          git -C ~/api/ pull origin ${{ github.ref_name }}
+          git -C ~/api/ checkout -b release/${{ github.ref_name }}
+          docker system prune -af && docker compose -f ~/api/devops/compose.yml up --no-deps --build api -d
+          EOF

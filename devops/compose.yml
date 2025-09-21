@@ -25,23 +25,34 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ../db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   api:
     container_name: api
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ../
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     env_file:
-      - .env.development
+      - ../.env.production
     depends_on:
       redis:
         condition: service_started
       db:
         condition: service_healthy
-    volumes:
-      - ./:/app
+  nginx:
+    image: nginx
+    container_name: nginx
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    links:
+      - 'api:api'
+    depends_on:
+      - api
 volumes:
   redis_data:
   postgres_data:

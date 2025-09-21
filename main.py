@@ -11,17 +11,24 @@ from utils.environment import env
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     hookAgent, AgentShutdown = await HookAgent()
+    imageGeneratorAgent = await ImageGeneratorAgent()
 
     agent_os = AgentOS(
         os_id="templo_challenge_os",
         description="Templo challenge OS",
-        agents=[ImageGeneratorAgent, hookAgent],
+        agents=[imageGeneratorAgent, hookAgent],
         fastapi_app=app,
         replace_routes=False,
     )
 
-    app = agent_os.get_app()
-    yield
+    new_app = agent_os.get_app()
+    app.router.routes.extend(new_app.router.routes)
+
+    try:
+        yield
+    finally:
+        if AgentShutdown is not None:
+            await AgentShutdown()
 
 app: FastAPI = FastAPI(
     title="Templo IA Challenge",
