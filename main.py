@@ -3,41 +3,23 @@ from pydantic import BaseModel
 from dotenv import dotenv_values
 import os
 
-from textwrap import dedent
+from agents.image_generator import ImageGeneratorAgent
 
-from agno.agent import Agent
-from agno.models.anthropic import Claude
-from agno.models.openai import OpenAIChat
 from agno.os import AgentOS
-from agno.tools.dalle import DalleTools
 
 environment = os.environ.get('PYTHON_ENV')
 
 env = dotenv_values(f'.env.{environment}')
 
-app: FastAPI =FastAPI(title="IA Challenge", description="Desafio técnico Templo.")
-
-assistant = Agent(
-    name="Assistente",
-    model=OpenAIChat(id="gpt-5-mini"),
-    tools=[DalleTools()],
-    description="You are an AI agent that can create images using DALL-E.",
-    instructions=[
-        "When the user asks you to create an image, use the DALL-E tool to create an image.",
-        "The DALL-E tool will return an image URL.",
-        "Return the image URL in your response in the following format: `![image description](image URL)`",
-    ],
-    markdown=True,
-)
-
+app: FastAPI =FastAPI(title="Templo IA Challenge", description="Desafio técnico Templo.")
 
 class Body(BaseModel):
     message: str
 
 agent_os = AgentOS(
-    os_id="first-os",
-    description="First OS",
-    agents=[assistant],
+    os_id="templo_challenge_os",
+    description="Templo challenge OS",
+    agents=[ImageGeneratorAgent],
     fastapi_app=app,
     replace_routes=False
 )

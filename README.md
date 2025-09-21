@@ -28,14 +28,13 @@ Não vou seguir nenhum padrão, mas deixarei claro a necessidade do uso
 Passos:
 
 - [X] Criar a estrutura inicial com o UV;
-- [X] Criar a configuração Docker;
+- [ ] Criar a configuração Docker (Dockerfile e compose.yml) para Desenvolvimento e Produção;
 - [X] Criar o makefile para operar a aplicação;
 - [ ] Criar a estrutura de agentes;
-- [ ] Criar o agente de gerar a imagem;
+- [X] Criar o agente de gerar a imagem;
 - [ ] Criar o agente de executar a ação em serviço externo com o MCP;
 - [ ] Criar a estrutura de API;
 - [ ] Criar uma rota de Post para a geração da imagem;
 - [ ] Criar uma rota de Post para executar o workflow de ação;
-- [ ] Criar o compose file para automatizar a construção;
 - [ ] Criar o workflow do github actions
 - [ ] Documentar o processo de uso do modelo de geração de imagens do gpt-5

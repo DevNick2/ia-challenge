@@ -11,16 +11,12 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 WORKDIR /app
 
-# copie os manifests primeiro para aproveitar cache de camadas
 COPY pyproject.toml uv.lock* ./
 
-# instale deps (sem dev para imagem mais enxuta)
 RUN uv sync --locked --no-dev
 
-# agora copie o restante do projeto
 COPY . /app
 
-# entrypoint vazio é ok
 ENTRYPOINT []
 
 CMD ["uv", "run", "main.py"]
