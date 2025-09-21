@@ -1,19 +1,45 @@
 services:
+  redis:
+    image: redis:7.2
+    container_name: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    restart: always
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: db
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      retries: 10
+      start_period: 60s
+      timeout: 5s
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
   api:
+    container_name: api
     build: .
     ports:
       - "3000:3000"
     env_file:
       - .env.development
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-          ignore:
-            - .venv/
-            - __pycache__/
-            - .mypy_cache/
-            - .ruff_cache/
-        - action: rebuild
-          path: ./uv.lock
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+volumes:
+  redis_data:
+  postgres_data:

@@ -1,8 +1,8 @@
 build:
-	docker compose up --no-deps --build --watch
+	docker compose up --no-deps --build -d
 
 down:
 	docker compose down
 
 run:
-	docker compose up --watch
+	docker compose up -d

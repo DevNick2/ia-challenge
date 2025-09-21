@@ -1,31 +1,43 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
-from pydantic import BaseModel
-from dotenv import dotenv_values
-import os
-
-from agents.image_generator import ImageGeneratorAgent
-
 from agno.os import AgentOS
 
-environment = os.environ.get('PYTHON_ENV')
+from agents.image_generator import ImageGeneratorAgent
+from agents.hook import HookAgent
 
-env = dotenv_values(f'.env.{environment}')
+from utils.environment import env
 
-app: FastAPI =FastAPI(title="Templo IA Challenge", description="Desafio técnico Templo.")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    hookAgent, AgentShutdown = await HookAgent()
 
-class Body(BaseModel):
-    message: str
+    agent_os = AgentOS(
+        os_id="templo_challenge_os",
+        description="Templo challenge OS",
+        agents=[ImageGeneratorAgent, hookAgent],
+        fastapi_app=app,
+        replace_routes=False,
+    )
 
-agent_os = AgentOS(
-    os_id="templo_challenge_os",
-    description="Templo challenge OS",
-    agents=[ImageGeneratorAgent],
-    fastapi_app=app,
-    replace_routes=False
+    app = agent_os.get_app()
+    yield
+
+app: FastAPI = FastAPI(
+    title="Templo IA Challenge",
+    description="Desafio técnico Templo.",
+    lifespan=lifespan
 )
-
-app = agent_os.get_app()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=3000, reload=False, access_log=True, log_level='debug')
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=3000,
+        reload=(env == "development"),
+        access_log=True,
+        log_level='debug',
+        reload_delay=0.5,
+        reload_excludes=[".gitignore", ".python-version", "*.md", ".dockerignore"]
+    )

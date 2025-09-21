@@ -1,4 +1,4 @@
-# Objetivo do Desafio
+# Sua missão, caso decida aceitar
 
 O objetivo deste desafio é avaliar sua capacidade de projetar e construir um sistema de
 agentes de IA multifuncional utilizando nosso stack principal. Queremos ver na prática suas
@@ -19,5 +19,5 @@ Trello de "Em Progresso" para "Revisão").
 Sua missão é projetar e construir o protótipo de um sistema que demonstre essas duas
 capacidades.
 
-- [ ] Criar um ativo visual;
-- [ ] Executar uma ação em sistema externo;
+- [X] Criar um ativo visual;
+- [X] Executar uma ação em sistema externo;
