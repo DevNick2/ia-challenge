@@ -18,3 +18,6 @@ Trello de "Em Progresso" para "Revisão").
 
 Sua missão é projetar e construir o protótipo de um sistema que demonstre essas duas
 capacidades.
+
+- [ ] Criar um ativo visual;
+- [ ] Executar uma ação em sistema externo;
