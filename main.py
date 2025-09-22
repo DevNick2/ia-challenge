@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from agno.os import AgentOS
+from agno.os.interfaces.agui import AGUI
 
 from agents.image_generator import ImageGeneratorAgent
 from agents.hook import HookAgent
@@ -17,6 +18,7 @@ async def lifespan(app: FastAPI):
         os_id="templo_challenge_os",
         description="Templo challenge OS",
         agents=[imageGeneratorAgent, hookAgent],
+        interfaces=[AGUI(agent=hookAgent)],
         fastapi_app=app,
         replace_routes=False,
     )
